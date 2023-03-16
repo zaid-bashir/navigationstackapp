@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:get/get.dart';
 
 class ProductsController extends GetxController {
+  RxList widgets = [].obs;
+  RxInt counter = 1.obs;
   @override
   void onInit() {
     log("OnInit ProductsController");

@@ -1,28 +1,36 @@
 // ignore_for_file: must_be_immutable
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:navigationstackapp/app/modules/products/models/productmodel.dart';
+import 'package:navigationstackapp/app/modules/products/views/products_view.dart';
 
 import '../../../data/productData.dart';
+import '../../products/controllers/products_controller.dart';
 import '../controllers/product_detail_controller.dart';
 
-class ProductDetailView extends GetView<ProductDetailController> {
+class ProductDetailView extends StatefulWidget {
   ProductDetailView({Key? key, this.productModel}) : super(key: key);
   ProductModel? productModel;
-  ProductDetailController productDetailController =
-      Get.put(ProductDetailController());
+  @override
+  State<ProductDetailView> createState() => _ProductDetailViewState();
+}
+
+class _ProductDetailViewState extends State<ProductDetailView> {
+  ProductDetailController? productDetailController;
+  ProductsController? productsController;
+  @override
+  void initState() {
+    productDetailController = Get.put(ProductDetailController());
+    productsController = Get.put(ProductsController());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Product Details Page'),
-        centerTitle: true,
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -32,7 +40,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Image.network(
-                    productModel!.imageLink!,
+                    widget.productModel!.imageLink!,
                     fit: BoxFit.contain,
                     height: 300.0,
                   ),
@@ -42,17 +50,17 @@ class ProductDetailView extends GetView<ProductDetailController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          productModel!.name!,
+                          widget.productModel!.name!,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8.0),
                         Text(
-                          '\$${productModel!.price}',
+                          '\$${widget.productModel!.price}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 16.0),
                         Text(
-                          productModel!.description!,
+                          widget.productModel!.description!,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -78,23 +86,16 @@ class ProductDetailView extends GetView<ProductDetailController> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailView(
-                          productModel: ProductModel.fromJson(
-                            ProductData().productDataItems[index],
-                          ),
+                    productsController!.counter =
+                        productsController!.counter + 1;
+                    productsController!.widgets.add(
+                      ProductDetailView(
+                        productModel: ProductModel.fromJson(
+                          ProductData().productDataItems[index],
                         ),
                       ),
                     );
-                    // Get.to(
-                    // () => ProductDetailView(
-                    //   productModel: ProductModel.fromJson(
-                    //     ProductData().productDataItems[5],
-                    //   ),
-                    // ),
-                    // );
+                    log(productsController!.widgets.toList().toString());
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
